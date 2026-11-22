@@ -1,0 +1,3 @@
+target/release/matrixclock usr/bin
+pam/matrixclock etc/pam.d
+assets/fonts/MatrixClockGlyphs.otf usr/share/fonts/opentype/matrixclock

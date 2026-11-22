@@ -1,0 +1,24 @@
+[package]
+name = "matrixclock"
+version = "0.1.0"
+edition = "2024"
+authors = ["Суслов П. В. <9114339+MadBikerBest@users.noreply.github.com>"]
+license = "MIT"
+rust-version = "1.88"  # let-цепочки в if (стабильны с 1.88)
+
+[dependencies]
+fontdue = "0.9"
+glow = "0.18"
+libc = "0.2"
+serde = { version = "1", features = ["derive"] }
+toml = "1"
+toml_edit = "0.25"
+ureq = { version = "3.5", features = ["json"] }
+x11 = { version = "2.21", features = ["xlib", "glx", "xss", "xrandr"] }
+zeroize = "1"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

@@ -1,0 +1,26 @@
+Source: matrixclock
+Section: x11
+Priority: optional
+Maintainer: Суслов П. В. <9114339+MadBikerBest@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13),
+               cargo (>= 1.88),
+               rustc (>= 1.88),
+               pkgconf,
+               libpam0g-dev,
+               libx11-dev,
+               libxrandr-dev,
+               libxss-dev,
+               libgl-dev
+Standards-Version: 4.7.2
+Rules-Requires-Root: no
+
+Package: matrixclock
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Matrix-style 3D clock screensaver and session locker
+ Glowing 3D digits filled with falling katakana rain. Under X11 it renders
+ with OpenGL (bloom, glass digits, depth layers); in a terminal or on the
+ bare Linux console it draws with text characters.
+ .
+ Optional session lock: password via PAM, the color shifts towards red
+ with each wrong attempt.

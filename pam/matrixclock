@@ -1,0 +1,7 @@
+#%PAM-1.0
+# MatrixClock: только проверка пароля через pam_unix (как у vlock).
+# Намеренно без system-auth: в нём pam_faillock, который после 3 ошибок
+# заблокировал бы учётную запись целиком (и вход в систему тоже).
+# Число попыток ограничивает сам matrixclock (lock.max_attempts).
+auth     required pam_unix.so
+account  required pam_unix.so

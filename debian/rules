@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+# Зависимости крейтов скачивает packaging/deb.sh (cargo fetch --locked) до
+# dpkg-buildpackage: по Debian Policy 4.9 цели debian/rules не ходят в сеть.
+
+export CARGO_TARGET_DIR = $(CURDIR)/target
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	cargo build --release --frozen
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	cargo test --frozen
+endif
+
+override_dh_auto_clean:
+	rm -rf target

@@ -1,0 +1,59 @@
+# Пакет для Arch Linux. Собирается из архива исходников, который готовит
+# packaging/build.sh (он же запускает makepkg в контейнере archlinux:base-devel,
+# см. packaging/arch.sh): packaging/build.sh arch
+# Образец — официальные Rust-пакеты Arch (ripgrep): cargo fetch --locked
+# в prepare(), дальше сборка и тесты без сети (--frozen).
+
+# Maintainer: Суслов П. В. <9114339+MadBikerBest@users.noreply.github.com>
+pkgname=matrixclock
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Matrix-style 3D clock screensaver and session locker (X11 and Linux console)"
+arch=('x86_64')
+license=('MIT' 'OFL-1.1')  # MIT — программа, OFL — встроенные шрифты (Noto Sans JP, Russo One)
+depends=(
+  'glibc'
+  'libgcc'
+  'pam'
+  'libglvnd'
+  'libx11'
+  'libxrandr'
+  'libxss'
+)
+makedepends=(
+  'rust'
+)
+backup=('etc/pam.d/matrixclock')
+# LTO makepkg (-flto=auto в CFLAGS) делает из C-кода крейта ring объекты GCC LTO,
+# которые не читает линкер Rust (lld) — undefined symbol ring_core_*.
+# LTO всей программы и так включён в Cargo.toml (profile.release lto = true).
+# !debug — бинарник уже без символов (strip = true в Cargo.toml), отладочный пакет пуст.
+options=('!lto' '!debug')
+source=("$pkgname-$pkgver.tar.gz")
+sha256sums=('SKIP')  # локальный архив, создаётся packaging/build.sh при каждой сборке
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export CARGO_TARGET_DIR=target
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export CARGO_TARGET_DIR=target
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/matrixclock
+  install -vDm644 -t "$pkgdir/etc/pam.d" pam/matrixclock
+  install -vDm644 -t "$pkgdir/usr/share/fonts/matrixclock" assets/fonts/MatrixClockGlyphs.otf
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" config.example.toml
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE assets/fonts/OFL.txt assets/fonts/OFL-Russo.txt
+}
